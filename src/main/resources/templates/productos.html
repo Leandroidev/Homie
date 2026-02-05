@@ -11,9 +11,7 @@
     </style>
 </head>
 <body>
-
 <h1>Catálogo de Productos</h1>
-
 <table>
     <thead>
     <tr>
@@ -23,7 +21,6 @@
     </tr>
     </thead>
     <tbody>
-    <!-- Iterar sobre la lista de productos pasada desde el controlador -->
     <tr th:each="producto : ${productos}">
         <td th:text="${producto.id}">1</td>
         <td th:text="${producto.nombre}">Arroz</td>
@@ -31,6 +28,5 @@
     </tr>
     </tbody>
 </table>
-
 </body>
 </html>

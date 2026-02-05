@@ -1,7 +1,6 @@
 package com.homie.api.controllers;
 
 import com.homie.api.models.Hogar;
-import com.homie.api.models.Usuario;
 import com.homie.api.services.HogarService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,7 +36,7 @@ public class HogarController {
 
     @PostMapping
     public String createHogar(@ModelAttribute Hogar hogar) {
-        hogarService.guardarNuevoHogar(hogar);
+        hogarService.create(hogar);
         return "redirect:/hogares";
     }
 }

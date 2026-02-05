@@ -24,7 +24,7 @@ public class HogarService {
         return hogarRepository.findById(id);
     }
 
-    public Hogar guardarNuevoHogar(Hogar hogar) {
-        return hogarRepository.save(hogar);
+    public Hogar create(Hogar nuevoHogar) {
+        return hogarRepository.save(nuevoHogar);
     }
 }

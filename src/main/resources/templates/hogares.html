@@ -14,25 +14,25 @@
     </style>
 </head>
 <body>
-    <h1>Hogares</h1>
-    <ul>
-        <li th:each="hogar:${hogares}">
-            <span class="hogar-nombre" th:text="${hogar.nombre}">Nombre del Hogar</span>
-            <ul class="habitantes-list">
-                <li th:each="usuario:${hogar.habitantes}" th:text="${usuario.nombre} + ' ' + ${usuario.apellido}">
-                    Nombre del habitante
-                </li>
-            </ul>
-        </li>
-    </ul>
-      <form th:action="@{/hogares}" method="post">
-        <div>
-            <label for="nombre">Nombre del Hogar:</label>
-            <input type="text" id="nombre" name="nombre" />
-        </div>
-        <div>
-            <input type="submit" value="Guardar Hogar" />
-        </div>
-    </form>
+<h1>Hogares</h1>
+<ul>
+    <li th:each="hogar:${hogares}">
+        <span class="hogar-nombre" th:text="${hogar.nombre}">Nombre del Hogar</span>
+        <ul class="habitantes-list">
+            <li th:each="usuario:${hogar.habitantes}" th:text="${usuario.nombre} + ' ' + ${usuario.apellido}">
+                Nombre del habitante
+            </li>
+        </ul>
+    </li>
+</ul>
+<form th:action="@{/hogares}" method="post">
+    <div>
+        <label for="nombre">Nombre del Hogar:</label>
+        <input type="text" id="nombre" name="nombre"/>
+    </div>
+    <div>
+        <input type="submit" value="Guardar Hogar"/>
+    </div>
+</form>
 </body>
 </html>

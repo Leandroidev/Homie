@@ -1,6 +1,5 @@
 package com.homie.api.controllers;
 
-import com.homie.api.models.Hogar;
 import com.homie.api.models.Producto;
 import com.homie.api.services.ProductoService;
 import org.springframework.stereotype.Controller;

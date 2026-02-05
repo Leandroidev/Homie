@@ -3,37 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <title>USUARIOS</title>
-    <style>
-        body { font-family: sans-serif; margin: 2em; background-color: #f8f9fa; }
-        h1 { color: #343a40; }
-        table { border-collapse: collapse; width: 100%; max-width: 800px; } /* Aumentado el ancho */
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        thead { background-color: #f2f2f2; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script defer th:src="@{/js/main.js}"></script>
+
+
 </head>
 <body>
-    <h1>USUARIOS</h1>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Hogar</th> <!-- Nueva cabecera -->
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="usuario:${usuarios}">
-                <td th:text="${usuario.id}">1</td>
-                <td th:text="${usuario.nombre}">Nombre</td>
-                <td th:text="${usuario.apellido}">Apellido</td>
-                <!-- Nueva celda para el nombre del hogar -->
-                <!-- Se usa un ternario: si el hogar no es null, muestra el nombre, si no, muestra 'Sin hogar' -->
-                <td th:text="${usuario.hogar != null ? usuario.hogar.nombre : 'Sin hogar'}">Nombre del Hogar</td>
-            </tr>
-        </tbody>
-    </table>
+<h1>USUARIOS</h1>
+<button id="openModalBtn" class="btn btn-primary">Crear Nuevo Usuario</button>
+<div id="userModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Nuevo Usuario</h2>
+        <form th:action="@{/usuarios}" method="post">
+            <div style="margin-bottom: 15px;">
+                <label for="nombre">Nombre del usuario:</label>
+                <input type="text" id="nombre" name="nombre" required style="width: 95%; padding: 8px;"/>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label for="apellido">Apellido del usuario:</label>
+                <input type="text" id="apellido" name="apellido" required style="width: 95%; padding: 8px;"/>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label for="pass">Contraseña:</label>
+                <input type="password" id="pass" name="pass" required style="width: 95%; padding: 8px;"/>
+            </div>
+            <div class="form-buttons">
+                <input type="submit" value="Guardar Usuario" class="btn btn-primary"/>
+                <button type="button" id="cancelBtn" class="btn btn-danger">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <h2>Editar Usuario</h2>
+        <form th:action="@{/usuarios}" id="editForm" method="post">
+            <input type="hidden" name="_method" value="put"/>
 
+            <div style="margin-bottom: 15px;">
+                <label for="edit-nombre">Nombre:</label>
+                <input type="text" id="edit-nombre" name="nombre" required/>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label for="edit-apellido">Apellido:</label>
+                <input type="text" id="edit-apellido" name="apellido" required/>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label for="edit-pass">Nueva Contraseña (dejar en blanco para no cambiar):</label>
+                <input type="password" id="edit-pass" name="pass"/>
+            </div>
+
+            <div class="form-buttons">
+                <input type="submit" value="Guardar Cambios" class="btn btn-primary"/>
+                <button type="button" class="btn btn-secondary cancel-btn">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Hogar</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="usuario:${usuarios}">
+        <td th:text="${usuario.id}">1</td>
+        <td th:text="${usuario.nombre}">Nombre</td>
+        <td th:text="${usuario.apellido}">Apellido</td>
+        <td th:text="${usuario.hogar != null ? usuario.hogar.nombre : 'Sin hogar'}">Nombre del Hogar</td>
+        <td style="display:inline;display:flex;justify-content:space-evenly">
+            <button type="button" class="btn btn-primary btn-sm edit-btn" th:data-id="${usuario.id}" title="Editar">
+                Editar
+            </button>
+            <form th:action="@{/usuarios/eliminar/{id}(id=${usuario.id})}" th:method="delete">
+                <button type="submit" class="btn btn-danger btn-sm">
+                    <span>&times;</span>
+                </button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>

@@ -22,4 +22,5 @@ public class HogarRestController {
     public List<Hogar> getAllHogares() {
         return hogarService.getAll();
     }
+
 }

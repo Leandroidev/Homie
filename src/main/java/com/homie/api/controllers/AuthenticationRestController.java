@@ -25,8 +25,8 @@ public class AuthenticationRestController {
             Authentication auth = this.authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password)
             );
-            // Si es exitoso, puedes devolver un token o mensaje
-            return ResponseEntity.ok(Map.of("message", "Login exitoso"));        } catch (AuthenticationException e) {
+            return ResponseEntity.ok(Map.of("message", "Login exitoso"));
+        } catch (AuthenticationException e) {
             return ResponseEntity.status(401).body("Credenciales incorrectas");
         }
     }

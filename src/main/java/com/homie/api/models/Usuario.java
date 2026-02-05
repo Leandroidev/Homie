@@ -1,12 +1,15 @@
 package com.homie.api.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+
     private long id;
     private String nombre;
     private String apellido;
@@ -15,6 +18,7 @@ public class Usuario {
     @ManyToOne(optional = true)
     @JoinColumn(name = "hogar_id")
     @JsonBackReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Hogar hogar;
 
     public Usuario() {
