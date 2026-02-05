@@ -2,6 +2,8 @@ package com.homie.api.controllers;
 
 import com.homie.api.models.Usuario;
 import com.homie.api.services.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/usuarios")
+@Tag(name = "Gestión de Usuarios", description = "Endpoints para crear, leer, actualizar y eliminar usuarios.")
 public class UsuarioRestController {
 
     private final UsuarioService usuarioService;
@@ -19,8 +22,9 @@ public class UsuarioRestController {
         this.usuarioService = usuarioService;
     }
 
+    @Operation(summary = "Obtener todos los usuarios", description = "Devuelve una lista de todos los usuarios registrados en el sistema.")
     @GetMapping
-    public ResponseEntity<List<Usuario>> getAllUsuarios() {
+    public ResponseEntity<List<Usuario>> getAll() {
         List<Usuario> usuarios = usuarioService.getAll();
         if (usuarios.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -28,6 +32,7 @@ public class UsuarioRestController {
         return ResponseEntity.ok(usuarios);
     }
 
+    @Operation(summary = "Obtener usuario por id", description = "Devuelve el usuario registrados en el sistema que coincide con el id brindado.")
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> getById(@PathVariable("id") Long id) {
         Optional<Usuario> usuarioOptional = usuarioService.getById(id);
@@ -40,6 +45,7 @@ public class UsuarioRestController {
         }
     }
 
+    @Operation(summary = "Borrar usuario por id", description = "Borra el usuario registrados en el sistema que coincide con el id brindado.")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         usuarioService.delete(id);
@@ -47,12 +53,14 @@ public class UsuarioRestController {
 
     }
 
+    @Operation(summary = "Crear un usuario", description = "Crea un nuevo usuario asignandole nombre, apellido y pass.")
     @PostMapping
     public ResponseEntity<Usuario> create(@RequestBody Usuario nuevoUsuario) {
         Usuario usuarioGuardado = usuarioService.create(nuevoUsuario);
         return new ResponseEntity<>(usuarioGuardado, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Modificar un usuario", description = "Modifica y devuelve un usuario.")
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> update(@PathVariable("id") Long id, @RequestBody Usuario putUsuario) {
         Usuario usuarioModificado = usuarioService.update(id, putUsuario);

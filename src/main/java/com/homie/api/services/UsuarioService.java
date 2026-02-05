@@ -21,6 +21,9 @@ public class UsuarioService {
     }
 
     public Optional<Usuario> getById(Long id) {
+        if (!usuarioRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Usuario no encontrado con id: " + id);
+        }
         return usuarioRepository.findById(id);
     }
 

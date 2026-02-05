@@ -1,5 +1,7 @@
 package com.homie.api.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
+@Tag(name = "Gestión de Autentificacion", description = "Permite autenticarse en la aplicacion. User: admin PASS: 123")
 public class AuthenticationRestController {
     private final AuthenticationManager authenticationManager;
 
@@ -20,6 +23,11 @@ public class AuthenticationRestController {
     }
 
     @PostMapping("/api/login")
+    @Operation(summary = "Ingresa al sistema", description = "Ingresa al sistema." + "\n\n" +
+            "Credenciales admin" + "\n\n" + "\t" +
+            "User: admin | Pass: 123" + "\n\n" +
+            "Credenciales usuario " + "\n\n" + '\t' +
+            "User: user | Pass: 321")
     public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {
         try {
             Authentication auth = this.authenticationManager.authenticate(

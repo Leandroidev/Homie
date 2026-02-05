@@ -1,7 +1,9 @@
 package com.homie.api.services;
 
+import com.homie.api.exception.ResourceNotFoundException;
 import com.homie.api.models.Producto;
 import com.homie.api.data.ProductoRepository;
+import com.homie.api.models.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +16,6 @@ public class ProductoService {
 
     private final ProductoRepository productoRepository;
 
-
     public ProductoService(ProductoRepository productoRepository) {
         this.productoRepository = productoRepository;
     }
@@ -25,5 +26,28 @@ public class ProductoService {
 
     public Optional<Producto> getById(Long id) {
         return productoRepository.findById(id);
+    }
+
+    public void delete(Long id) {
+        if (!productoRepository.existsById(id)) {
+            throw new ResourceNotFoundException("No se pudo eliminar. Producto no encontrado con id: " + id);
+        }
+        productoRepository.deleteById(id);
+    }
+
+    public Producto create(Producto producto) {
+        return productoRepository.save(producto);
+    }
+
+    public Producto update(Long id, Producto putProducto) {
+        Optional<Producto> productoExistente = productoRepository.findById(id);
+        if (productoExistente.isPresent()) {
+            Producto productoActualizado = productoExistente.get();
+            productoActualizado.setNombre(putProducto.getNombre());
+            productoActualizado.setPresentacion(putProducto.getPresentacion());
+            return productoRepository.save(productoActualizado);
+        } else {
+            throw new ResourceNotFoundException("No se pudo Actualizar. Producto no encontrado con id: " + id);
+        }
     }
 }
