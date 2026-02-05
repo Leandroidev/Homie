@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Productos</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        table { border-collapse: collapse; width: 100%; max-width: 600px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        thead { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+<h1>Catálogo de Productos</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Presentación</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Iterar sobre la lista de productos pasada desde el controlador -->
+    <tr th:each="producto : ${productos}">
+        <td th:text="${producto.id}">1</td>
+        <td th:text="${producto.nombre}">Arroz</td>
+        <td th:text="${producto.presentacion}">1kg</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

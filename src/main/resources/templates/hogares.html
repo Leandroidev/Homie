@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hogares</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; background-color: #f8f9fa; }
+        h1 { color: #343a40; }
+        form { background-color: #fff; padding: 2em; border: 1px solid #dee2e6; border-radius: 5px; max-width: 500px; }
+        div { margin-bottom: 1em; }
+        label { display: block; margin-bottom: .5em; }
+        input[type="text"] { width: 95%; padding: .5em; border: 1px solid #ced4da; border-radius: 4px; }
+        input[type="submit"] { padding: .7em 1.5em; border: none; border-radius: 4px; background-color: #28a745; color: white; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Hogares</h1>
+    <ul>
+        <li th:each="hogar:${hogares}">
+            <span class="hogar-nombre" th:text="${hogar.nombre}">Nombre del Hogar</span>
+            <ul class="habitantes-list">
+                <li th:each="usuario:${hogar.habitantes}" th:text="${usuario.nombre} + ' ' + ${usuario.apellido}">
+                    Nombre del habitante
+                </li>
+            </ul>
+        </li>
+    </ul>
+      <form th:action="@{/hogares}" method="post">
+        <div>
+            <label for="nombre">Nombre del Hogar:</label>
+            <input type="text" id="nombre" name="nombre" />
+        </div>
+        <div>
+            <input type="submit" value="Guardar Hogar" />
+        </div>
+    </form>
+</body>
+</html>
