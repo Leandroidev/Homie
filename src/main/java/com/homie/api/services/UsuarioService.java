@@ -2,6 +2,7 @@ package com.homie.api.services;
 
 import com.homie.api.data.UsuarioRepository;
 import com.homie.api.exception.ResourceNotFoundException;
+import com.homie.api.models.Producto;
 import com.homie.api.models.Usuario;
 import org.springframework.stereotype.Service;
 
@@ -47,14 +48,26 @@ public class UsuarioService {
     }
 
     public Usuario update(Long id, Usuario putUsuario) {
-        Usuario usuarioExistente = usuarioRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
-
-        usuarioExistente.setNombre(putUsuario.getNombre());
-        usuarioExistente.setApellido(putUsuario.getApellido());
-        usuarioExistente.setPass(putUsuario.getPass());
-
-
-        return usuarioRepository.save(usuarioExistente);
+        Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
+        if (putUsuario.getNombre() == null &&
+                putUsuario.getApellido() == null &&
+                putUsuario.getPass() == null) {
+            throw new IllegalArgumentException("La solicitud de actualización no contiene campos para modificar.");
+        }
+        if (usuarioExistente.isPresent()) {
+            Usuario usuarioActualizado = usuarioExistente.get();
+            if (putUsuario.getNombre() != null) {
+                usuarioActualizado.setNombre(putUsuario.getNombre());
+            }
+            if (putUsuario.getApellido() != null) {
+                usuarioActualizado.setApellido(putUsuario.getApellido());
+            }
+            if (putUsuario.getPass() != null) {
+                usuarioActualizado.setPass(putUsuario.getPass());
+            }
+            return usuarioRepository.save(usuarioActualizado);
+        } else {
+            throw new ResourceNotFoundException("No se pudo Actualizar. Producto no encontrado con id: " + id);
+        }
     }
 }

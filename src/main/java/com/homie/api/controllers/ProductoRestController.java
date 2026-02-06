@@ -1,7 +1,9 @@
 package com.homie.api.controllers;
 
+import com.homie.api.dto.ProductoRequest;
+import com.homie.api.dto.ProductoResponse;
+import com.homie.api.mappers.ProductoMapper;
 import com.homie.api.models.Producto;
-import com.homie.api.models.Usuario;
 import com.homie.api.services.ProductoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,37 +13,44 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/productos")
 @Tag(name = "Gestión de Productos", description = "Endpoints para crear, leer, actualizar y eliminar productos.")
 public class ProductoRestController {
     private final ProductoService productoService;
+    private final ProductoMapper productoMapper;
 
-    public ProductoRestController(ProductoService productoService) {
+    public ProductoRestController(ProductoService productoService, ProductoMapper productoMapper) {
         this.productoService = productoService;
+        this.productoMapper = productoMapper;
     }
 
     @GetMapping
     @Operation(summary = "Obtener todos los productos", description = "Devuelve una lista de todos los productos registrados en el sistema.")
-    public ResponseEntity<List<Producto>> getAll() {
+    public ResponseEntity<List<ProductoResponse>> getAll() {
         List<Producto> productos = productoService.getAll();
         if (productos.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(productos);
+        List<ProductoResponse> productosResponse = productos.stream()
+                .map(productoMapper::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(productosResponse);
     }
 
     @Operation(summary = "Obtener producto por id", description = "Devuelve el producto registrados en el sistema que coincide con el id brindado.")
     @GetMapping("/{id}")
-    public ResponseEntity<Producto> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<ProductoResponse> getById(@PathVariable("id") Long id) {
         Optional<Producto> productoOptional = productoService.getById(id);
-        if (productoOptional.isPresent()) {
-            Producto productoEncontrado = productoOptional.get();
-            return ResponseEntity.ok(productoEncontrado);
-        } else {
+        if (productoOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
+        Producto productoEncontrado = productoOptional.get();
+        ProductoResponse productosResponse = productoMapper.toResponse(productoEncontrado);
+        return ResponseEntity.ok(productosResponse);
+
     }
 
     @Operation(summary = "Borrar producto por id", description = "Borra el producto registrados en el sistema que coincide con el id brindado.")
@@ -53,16 +62,20 @@ public class ProductoRestController {
 
     @Operation(summary = "Crear un producto", description = "Crea un nuevo producto asignandole nombre y presentacion indicada.")
     @PostMapping
-    public ResponseEntity<Producto> create(@RequestBody Producto nuevoProducto) {
+    public ResponseEntity<ProductoResponse> create(@RequestBody ProductoRequest nuevoProductoRequest) {
+        Producto nuevoProducto = productoMapper.toEntity(nuevoProductoRequest);
         Producto productoGuardado = productoService.create(nuevoProducto);
-        return new ResponseEntity<>(productoGuardado, HttpStatus.CREATED);
+        ProductoResponse productoResponse = productoMapper.toResponse(productoGuardado);
+        return new ResponseEntity<>(productoResponse, HttpStatus.CREATED);
     }
 
     @Operation(summary = "Modificar un producto", description = "Modifica y devuelve un producto.")
-    @PutMapping("/{id}")
-    public ResponseEntity<Producto> update(@PathVariable("id") Long id, @RequestBody Producto putProducto) {
-        Producto productoModificado = productoService.update(id, putProducto);
-        return ResponseEntity.ok(productoModificado);
+    @PatchMapping("/{id}")
+    public ResponseEntity<ProductoResponse> update(@PathVariable("id") Long id, @RequestBody ProductoRequest putProductoRequest) {
+        Producto productoAModificar = productoMapper.toEntity(putProductoRequest);
+        Producto productoModificado = productoService.update(id, productoAModificar);
+        ProductoResponse productoResponse = productoMapper.toResponse(productoModificado);
+        return ResponseEntity.ok(productoResponse);
     }
 
 }

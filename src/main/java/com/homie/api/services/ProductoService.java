@@ -1,5 +1,6 @@
 package com.homie.api.services;
 
+import com.homie.api.dto.ProductoRequest;
 import com.homie.api.exception.ResourceNotFoundException;
 import com.homie.api.models.Producto;
 import com.homie.api.data.ProductoRepository;
@@ -41,10 +42,17 @@ public class ProductoService {
 
     public Producto update(Long id, Producto putProducto) {
         Optional<Producto> productoExistente = productoRepository.findById(id);
+        if (putProducto.getNombre() == null && putProducto.getPresentacion() == null) {
+            throw new IllegalArgumentException("La solicitud de actualización no contiene campos para modificar.");
+        }
         if (productoExistente.isPresent()) {
             Producto productoActualizado = productoExistente.get();
-            productoActualizado.setNombre(putProducto.getNombre());
-            productoActualizado.setPresentacion(putProducto.getPresentacion());
+            if (putProducto.getNombre() != null) {
+                productoActualizado.setNombre(putProducto.getNombre());
+            }
+            if (putProducto.getPresentacion() != null) {
+                productoActualizado.setPresentacion(putProducto.getPresentacion());
+            }
             return productoRepository.save(productoActualizado);
         } else {
             throw new ResourceNotFoundException("No se pudo Actualizar. Producto no encontrado con id: " + id);

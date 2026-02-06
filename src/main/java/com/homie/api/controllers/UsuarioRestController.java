@@ -1,5 +1,8 @@
 package com.homie.api.controllers;
 
+import com.homie.api.dto.UsuarioRequest;
+import com.homie.api.dto.UsuarioResponse;
+import com.homie.api.mappers.UsuarioMapper;
 import com.homie.api.models.Usuario;
 import com.homie.api.services.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -17,30 +21,36 @@ import java.util.Optional;
 public class UsuarioRestController {
 
     private final UsuarioService usuarioService;
+    private final UsuarioMapper usuarioMapper;
 
-    public UsuarioRestController(UsuarioService usuarioService) {
+    public UsuarioRestController(UsuarioService usuarioService, UsuarioMapper usuarioMapper) {
         this.usuarioService = usuarioService;
+        this.usuarioMapper = usuarioMapper;
     }
 
     @Operation(summary = "Obtener todos los usuarios", description = "Devuelve una lista de todos los usuarios registrados en el sistema.")
     @GetMapping
-    public ResponseEntity<List<Usuario>> getAll() {
+    public ResponseEntity<List<UsuarioResponse>> getAll() {
         List<Usuario> usuarios = usuarioService.getAll();
         if (usuarios.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(usuarios);
+        List<UsuarioResponse> usuariosResponse = usuarios.stream()
+                .map(usuarioMapper::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(usuariosResponse);
     }
 
     @Operation(summary = "Obtener usuario por id", description = "Devuelve el usuario registrados en el sistema que coincide con el id brindado.")
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<UsuarioResponse> getById(@PathVariable("id") Long id) {
         Optional<Usuario> usuarioOptional = usuarioService.getById(id);
-        if (usuarioOptional.isPresent()) {
-            Usuario usuarioEncontrado = usuarioOptional.get();
-            return ResponseEntity.ok(usuarioEncontrado);
-        } else {
+        if (usuarioOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
+        } else {
+            Usuario usuarioEncontrado = usuarioOptional.get();
+            UsuarioResponse usuarioResponse = usuarioMapper.toResponse(usuarioEncontrado);
+            return ResponseEntity.ok(usuarioResponse);
 
         }
     }
@@ -55,15 +65,21 @@ public class UsuarioRestController {
 
     @Operation(summary = "Crear un usuario", description = "Crea un nuevo usuario asignandole nombre, apellido y pass.")
     @PostMapping
-    public ResponseEntity<Usuario> create(@RequestBody Usuario nuevoUsuario) {
-        Usuario usuarioGuardado = usuarioService.create(nuevoUsuario);
-        return new ResponseEntity<>(usuarioGuardado, HttpStatus.CREATED);
+    public ResponseEntity<UsuarioResponse> create(@RequestBody UsuarioRequest nuevoUsuarioRequest) {
+
+        Usuario nuevoUsuario = usuarioMapper.toEntity(nuevoUsuarioRequest);
+        Usuario usuarioCreado = usuarioService.create(nuevoUsuario);
+        UsuarioResponse usuarioResponse = usuarioMapper.toResponse(usuarioCreado);
+
+        return new ResponseEntity<>(usuarioResponse, HttpStatus.CREATED);
     }
 
     @Operation(summary = "Modificar un usuario", description = "Modifica y devuelve un usuario.")
-    @PutMapping("/{id}")
-    public ResponseEntity<Usuario> update(@PathVariable("id") Long id, @RequestBody Usuario putUsuario) {
-        Usuario usuarioModificado = usuarioService.update(id, putUsuario);
-        return ResponseEntity.ok(usuarioModificado);
+    @PatchMapping("/{id}")
+    public ResponseEntity<UsuarioResponse> update(@PathVariable("id") Long id, @RequestBody UsuarioRequest putUsuarioRequest) {
+        Usuario usuarioAModificar = usuarioMapper.toEntity(putUsuarioRequest);
+        Usuario usuarioModificado = usuarioService.update(id, usuarioAModificar);
+        UsuarioResponse usuarioResponse = usuarioMapper.toResponse(usuarioModificado);
+        return ResponseEntity.ok(usuarioResponse);
     }
 }
